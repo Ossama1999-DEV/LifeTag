@@ -2,32 +2,59 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>GreenMind - Interface Web</title>
+  <title>LifeTag - Dossier Médical Connecté</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Logo GreenMind" class="logo">
-    <h1>🌱 GreenMind</h1>
+    <img src="logo.png" alt="Logo LifeTag" class="logo">
+    <h1>💊 LifeTag</h1>
+    <p class="subtitle">Votre santé, toujours à portée de main</p>
   </header>
 
   <main>
-    <!-- Curseur luminosité -->
-    <section class="control">
-      <label for="lightSlider">Luminosité :</label>
-      <input type="range" id="lightSlider" min="0" max="100" value="50">
-      <span id="lightValue">50%</span>
+    <!-- Section Affichage -->
+    <section class="info-section">
+      <h2>Informations Médicales</h2>
+      <div id="medicalData">
+        <p><strong>Nom :</strong> <span id="nameDisplay">Oussama Dbibih</span></p>
+        <p><strong>Âge :</strong> <span id="ageDisplay">26 ans</span></p>
+        <p><strong>Taille :</strong> <span id="heightDisplay">1.78 m</span></p>
+        <p><strong>Poids :</strong> <span id="weightDisplay">74 kg</span></p>
+        <p><strong>Groupe sanguin :</strong> <span id="bloodDisplay">O+</span></p>
+        <p><strong>Allergies :</strong> <span id="allergyDisplay">Aucune</span></p>
+      </div>
     </section>
 
-    <!-- Boutons actions -->
-    <section class="control">
-      <button id="openDoor">🚪 Ouvrir la porte</button>
-      <button id="waterPlant">💧 Arroser</button>
+    <!-- Section Modification -->
+    <section class="form-section">
+      <h2>Modifier les Informations</h2>
+      <form id="updateForm">
+        <label>Nom : <input type="text" id="nameInput"></label><br>
+        <label>Âge : <input type="number" id="ageInput" min="0"></label><br>
+        <label>Taille (m) : <input type="number" id="heightInput" step="0.01"></label><br>
+        <label>Poids (kg) : <input type="number" id="weightInput"></label><br>
+        <label>Groupe sanguin :
+          <select id="bloodInput">
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+          </select>
+        </label><br>
+        <label>Allergies : <input type="text" id="allergyInput"></label><br>
+
+        <button type="submit">💾 Enregistrer</button>
+      </form>
     </section>
   </main>
 
   <footer>
-    <p>© 2025 GreenMind - Ingénierie CESI Agro & IA</p>
+    <p>© 2025 LifeTag - Ingénierie CESI Santé & IoT</p>
   </footer>
 
   <script src="script.js"></script>

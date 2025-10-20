@@ -1,20 +1,22 @@
-// Curseur luminosité
-const lightSlider = document.getElementById("lightSlider");
-const lightValue = document.getElementById("lightValue");
+// Chargement des données initiales
+const fields = ["name", "age", "height", "weight", "blood", "allergy"];
 
-lightSlider.addEventListener("input", () => {
-  lightValue.textContent = lightSlider.value + "%";
-  console.log("Luminosité réglée à : " + lightSlider.value + "%");
+// Charger depuis le localStorage
+fields.forEach(field => {
+  const value = localStorage.getItem(field);
+  if (value) document.getElementById(field + "Display").textContent = value + (field === "age" ? " ans" : "");
 });
 
-// Bouton ouvrir la porte
-document.getElementById("openDoor").addEventListener("click", () => {
-  console.log("Commande : Ouvrir la porte");
-  alert("🚪 La porte a été ouverte !");
-});
-
-// Bouton arroser
-document.getElementById("waterPlant").addEventListener("click", () => {
-  console.log("Commande : Arroser les plantes");
-  alert("💧 Arrosage lancé !");
+// Soumission du formulaire
+document.getElementById("updateForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  fields.forEach(field => {
+    const input = document.getElementById(field + "Input").value;
+    if (input) {
+      localStorage.setItem(field, input);
+      document.getElementById(field + "Display").textContent = 
+        input + (field === "age" ? " ans" : "");
+    }
+  });
+  alert("✅ Informations mises à jour !");
 });
