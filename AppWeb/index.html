@@ -13,6 +13,36 @@
   </header>
 
   <main>
+    <!-- 🧍 Photo de profil -->
+    <section class="photo-section">
+      <h2>Photo de Profil</h2>
+      <div class="photo-container">
+        <img id="profilePhoto" src="default_user.png" alt="Photo de profil">
+      </div>
+      <button id="changePhotoBtn">📷 Modifier la photo</button>
+
+      <!-- Choix modal -->
+      <div id="photoModal" class="modal">
+        <div class="modal-content">
+          <h3>Choisir une option</h3>
+          <button id="importPhotoBtn">🖼️ Importer depuis la galerie</button>
+          <button id="takePhotoBtn">📸 Prendre une photo</button>
+          <button id="closeModal">❌ Annuler</button>
+        </div>
+      </div>
+
+      <!-- Input fichier caché -->
+      <input type="file" id="fileInput" accept="image/*" style="display:none">
+
+      <!-- Zone caméra -->
+      <div id="cameraContainer" style="display:none;">
+        <video id="cameraStream" autoplay></video>
+        <button id="captureBtn">📸 Capturer</button>
+        <button id="cancelCameraBtn">❌ Fermer</button>
+        <canvas id="photoCanvas" style="display:none;"></canvas>
+      </div>
+    </section>
+
     <!-- Section Affichage -->
     <section class="info-section">
       <h2>Informations Médicales</h2>
