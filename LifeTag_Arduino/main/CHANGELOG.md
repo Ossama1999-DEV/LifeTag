@@ -1,5 +1,0 @@
-- refactor AppWeb pour ajouter une photo de profil pour les users
-- refactor script.js pour ajouter les unite
-- refactor(AppWeb): Update l'interface web pour LifTag
-- Chore Add project to repo GITHUB
-- Initial commit

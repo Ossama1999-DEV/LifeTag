@@ -1,3 +1,5 @@
+- update README
+- refactor: project update to use multipe platforme ESP32 and Proteus 8 for the simulation
 - refactor AppWeb pour ajouter une photo de profil pour les users
 - refactor script.js pour ajouter les unite
 - refactor(AppWeb): Update l'interface web pour LifTag
