@@ -15,47 +15,28 @@ repo/LifeTag
 ├── AppWeb         # Interface web (dashboard)
 ├── doc            # Documentation technique
 ├── lab            # Prototypes & expérimentations
-├── lib            # Bibliothèque interne (core)
-│   ├── inc        # Headers publics
-│   ├── src        # Sources
-│   └── CMakeLists.txt
-├── main           # Application principale (LifeTag)
-├── test           # Tests unitaires (GoogleTest)
-├── driver         # Artefacts générés (.a, .so, exécutable)
+├── LifeTag_Arduino# Application principale (LifeTag)
+├── driver_ESP32   # Artefacts générés (.a, .so, exécutable)
+├── driver_Proteus # Artefacts générés (.a, .so, exécutable)
 ├── CMakeLists.txt # Build principal
 ├── startup.sh     # Script de build & packaging
 └── README.md      # Ce fichier
+└── CONTRIBUTING.md  # Guide de contribution
+└── LICENSE          # Licence du projet
 ```
 
 ## ⚙️ Build & Exécution
 
 ### 🔨 Compilation
 
-Le projet utilise **CMake** et **GCC**.  
 Toutes les étapes (configuration, compilation, génération des bibliothèques) sont automatisées via `startup.sh` :
 
 ```bash
 ./startup.sh
 ```
 
-À la fin, le dossier `driver/` contient :
-- l’exécutable `LifeTag`
-- la bibliothèque statique `libLifeTag.a`
-- la bibliothèque dynamique `libLifeTag.so`
-
 ### ▶️ Exécution
-
-Lancer l’application principale :
-
-```bash
-./driver/LifeTag
-```
-
-Sortie attendue :
-```
-=== Bienvenue dans LifeTag ===
-Version : LifeTag v0.1.0
-```
+![alt text](lab/image.png)
 
 ## 🧪 Tests unitaires
 
@@ -72,15 +53,6 @@ cd /usr/src/gtest
 sudo cmake .
 sudo make -j$(nproc)
 sudo cp lib/*.a /usr/lib
-```
-
-### Exécution des tests
-
-Après compilation du projet, lancez les tests depuis le dossier `build` :
-
-```bash
-cd build
-ctest --output-on-failure
 ```
 
 Les résultats détaillés s’affichent en cas d’échec.  
@@ -102,13 +74,15 @@ python3 -m http.server 8080
 ```
 Accéder à [http://localhost:8080](http://localhost:8080).
 
-## 📦 Bibliothèques générées
+## 📦 Bin générées
 
 Dans `driver/` :
-- **Statique** : `libLifeTag.a`
-- **Dynamique** : `libLifeTag.so`
-
-Ces bibliothèques contiennent la logique interne réutilisable (mobile, web, services externes).
+    ├── main.ino.bin
+    ├── main.ino.bootloader.bin
+    ├── main.ino.elf
+    ├── main.ino.map
+    ├── main.ino.merged.bin
+    └── main.ino.partitions.bin
 
 ## 🗺️ Architecture du projet
 
@@ -118,6 +92,11 @@ flowchart LR
     LibC++      -- API interne  --> LifeTag
     LifeTag     -- REST/API     --> AppWeb
     LifeTag     -- REST/API     --> AppMobile
+```
+## 📟 Arduino - Compilation pour ESP32 et simulation Proteus 8
+```mermaid
+    for ESP32 reel board : go to LifeTag_Ardino and use this command : arduino-cli compile --fqbn esp32:esp32:esp32 --output-dir ../bin --verbose
+    for ESP32 proteus simulation (.ino.elf) use this command : arduino-cli compile --fqbn arduino:avr:uno --output-dir ../build --verbose
 ```
 
 ## 👨‍💻 Auteurs

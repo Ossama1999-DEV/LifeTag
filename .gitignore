@@ -1,5 +1,7 @@
-/build
-/driver
+/driver_Proteus/
+/driver_ESP32/
+/LifeTag_Arduino/build_Proteus/
+/LifeTag_Arduino/bin_ESP32/
 .venv
 .direnv
 IA/greenmind.egg-info
@@ -8,4 +10,5 @@ __pycache__
 *.pyo
 *.pyd
 *.pkl
+*.in
 
