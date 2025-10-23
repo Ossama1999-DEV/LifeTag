@@ -94,7 +94,9 @@ flowchart LR
     LifeTag     -- REST/API     --> AppMobile
 ```
 ## 📟 Arduino - Compilation pour ESP32 et simulation Proteus 8
+
 ```mermaid
+flowchart TD
     for ESP32 reel board : go to LifeTag_Ardino and use this command : arduino-cli compile --fqbn esp32:esp32:esp32 --output-dir ../bin --verbose
     for ESP32 proteus simulation (.ino.elf) use this command : arduino-cli compile --fqbn arduino:avr:uno --output-dir ../build --verbose
 ```
