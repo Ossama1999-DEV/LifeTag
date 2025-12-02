@@ -97,9 +97,27 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    for ESP32 reel board : go to LifeTag_Ardino and use this command : arduino-cli compile --fqbn esp32:esp32:esp32 --output-dir ../bin --verbose
-    for ESP32 proteus simulation (.ino.elf) use this command : arduino-cli compile --fqbn arduino:avr:uno --output-dir ../build --verbose
+    for ESP32 reel board : go to LifeTag_Ardino and use this command : 
+    arduino-cli compile --fqbn esp32:esp32:esp32 --output-dir ../bin --verbose
+    for ESP32 proteus simulation (.ino.elf) use this command : 
+    arduino-cli compile --fqbn arduino:avr:uno --output-dir ../build --verbose
 ```
+sudo apt install curl -y
+curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+sudo mv bin/arduino-cli /usr/local/bin/
+
+arduino-cli core update-index
+arduino-cli core install esp32:esp32
+
+arduino-cli board listall esp32
+
+
+flasher:
+esptool --chip esp32 --port /dev/ttyUSB0 --baud 921600 --before default_reset --after hard_reset \
+  --no-stub write_flash -z \
+  0x1000  bin/esp32/LifeTag_Arduino.ino.bootloader.bin \
+  0x8000  bin/esp32/LifeTag_Arduino.ino.partitions.bin \
+  0x10000 bin/esp32/LifeTag_Arduino.ino.bin
 
 ## 👨‍💻 Auteurs
 
