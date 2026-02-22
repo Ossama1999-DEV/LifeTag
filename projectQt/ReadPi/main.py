@@ -1,15 +1,31 @@
-#import library to access port and time function
-from machine import Pin
-from time import sleep
+from machine import Pin, SPI
+import st7789
+import vga1_bold_16x32 as font
+import time
 
-# "LED" or GP25 to select onboard led of Pico W 
-Led = Pin("LED", Pin.OUT) 
+# SPI configuration (ReadPi)
+spi = SPI(1, baudrate=40000000, polarity=1, phase=1,
+          sck=Pin(10), mosi=Pin(11))
+
+tft = st7789.ST7789(
+    spi,
+    240,
+    240,
+    reset=Pin(12, Pin.OUT),
+    cs=Pin(9, Pin.OUT),
+    dc=Pin(8, Pin.OUT),
+    backlight=Pin(13, Pin.OUT),
+    rotation=0
+)
+
+tft.init()
+
+# Effacer écran
+tft.fill(st7789.BLACK)
+
+# Afficher texte
+tft.text(font, "LifeTag", 40, 80, st7789.GREEN)
+tft.text(font, "READY", 40, 120, st7789.WHITE)
 
 while True:
-    Led.on()  #To switch on LED
-    sleep(2)  # wait 2 second
-    print("LED is ON")
-    
-    Led.off() #To switch off LED
-    sleep(2)  #wait 2 second
-    print("LED is OFF")
+    pass
