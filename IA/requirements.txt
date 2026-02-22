@@ -1,5 +1,0 @@
-numpy
-scikit-learn
-joblib
-paho-mqtt
-# opencv-python-headless  # décommente si tu ajoutes la vision
