@@ -1,6 +1,6 @@
 /**
  * @file main.ino
- * @brief ESP32 - Login + menu lecture/ecriture + formulaire + affichage des donnees
+ * @brief ESP32 - Login + roles admin/user + menu + lecture/ecriture des donnees
  */
 
 // http://192.168.4.1
@@ -12,16 +12,15 @@
 #include <Preferences.h>
 
 // Identifiants de connexion
-const char* validUser = "admin";
-const char* validPass = "1234";
+const char* adminUser = "admin";
+const char* adminPass = "1234";
+
+const char* normalUser = "user";
+const char* normalPass = "1234";
 
 // Parametres WiFi
-const char* ssid = "LucasEsp32";
+const char* ssid = "LifeTag";
 const char* password = "123456789";
-
-// LED
-#define LED_PIN 19
-bool etatLed = false;
 
 // Serveur Web
 WebServer server(80);
@@ -31,7 +30,7 @@ const byte DNS_PORT = 53;
 // Memoire persistante
 Preferences preferences;
 
-// Variables de stockage
+// Variables de stockage - donnees de base
 String nom = "";
 String prenom = "";
 String dateNaissance = "";
@@ -41,8 +40,11 @@ String maladies = "";
 String traitement = "";
 String contactUrgence = "";
 
-// Pin Relay
-#define RELAY_PIN 27
+// Variables de stockage - donnees admin / medecin
+String antecedentsMedicaux = "";
+String chirurgie = "";
+String medecinTraitant = "";
+String numeroSecu = "";
 
 // Page HTML de connexion
 const char login_page[] PROGMEM = R"rawliteral(
@@ -115,8 +117,13 @@ const char login_page[] PROGMEM = R"rawliteral(
             fetch("/login?user=" + encodeURIComponent(username) + "&pass=" + encodeURIComponent(password))
             .then(response => response.text())
             .then(data => {
-                if (data === "SUCCESS") {
+                if (data === "ADMIN") {
                     localStorage.setItem("esp32_auth", "true");
+                    localStorage.setItem("esp32_role", "admin");
+                    window.location.href = "/menu";
+                } else if (data === "USER") {
+                    localStorage.setItem("esp32_auth", "true");
+                    localStorage.setItem("esp32_role", "user");
                     window.location.href = "/menu";
                 } else {
                     document.getElementById("error-message").style.display = "block";
@@ -131,7 +138,7 @@ const char login_page[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <div class="container">
-        <h1>🔒 HOME Login</h1>
+        <h1>SAFYRA SYSTEMS</h1>
         <input type="text" id="username" placeholder="Nom d'utilisateur">
         <input type="password" id="password" placeholder="Mot de passe">
         <p class="error" id="error-message">Login ou mot de passe incorrect</p>
@@ -170,6 +177,12 @@ const char menu_page[] PROGMEM = R"rawliteral(
 
         h1 {
             color: #007BFF;
+        }
+
+        .role {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #555;
         }
 
         .button {
@@ -220,18 +233,35 @@ const char menu_page[] PROGMEM = R"rawliteral(
 
         function logout() {
             localStorage.removeItem("esp32_auth");
+            localStorage.removeItem("esp32_role");
             window.location.href = "/";
         }
 
-        if (localStorage.getItem("esp32_auth") !== "true") {
-            window.location.href = "/";
+        window.onload = function() {
+            if (localStorage.getItem("esp32_auth") !== "true") {
+                window.location.href = "/";
+                return;
+            }
+
+            let role = localStorage.getItem("esp32_role");
+            let roleText = document.getElementById("roleText");
+            let writeBtn = document.getElementById("writeBtn");
+
+            if (role === "admin") {
+                roleText.innerText = "Connecté en tant que : Médecin";
+                writeBtn.innerText = "Écrire les données médecin";
+            } else {
+                roleText.innerText = "Connecté en tant que : Utilisateur";
+                writeBtn.innerText = "Écrire les données de base";
+            }
         }
     </script>
 </head>
 <body>
     <div class="container">
-        <h1>Bracelet médical</h1>
-        <button class="button write" onclick="goWrite()">Écrire les données</button>
+        <h1>Menu</h1>
+        <p class="role" id="roleText"></p>
+        <button class="button write" id="writeBtn" onclick="goWrite()">Écrire les données</button>
         <button class="button read" onclick="goRead()">Lire les données</button>
         <button class="button logout" onclick="logout()">Déconnexion</button>
     </div>
@@ -257,7 +287,7 @@ const char control_page[] PROGMEM = R"rawliteral(
 
         .container {
             margin-top: 30px;
-            max-width: 380px;
+            max-width: 420px;
             margin-left: auto;
             margin-right: auto;
             background: white;
@@ -289,6 +319,14 @@ const char control_page[] PROGMEM = R"rawliteral(
         textarea {
             resize: vertical;
             min-height: 70px;
+        }
+
+        .section-title {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #007BFF;
+            font-weight: bold;
+            text-align: center;
         }
 
         .button {
@@ -345,15 +383,31 @@ const char control_page[] PROGMEM = R"rawliteral(
             let maladies = document.getElementById("maladies").value;
             let traitement = document.getElementById("traitement").value;
             let contactUrgence = document.getElementById("contact_urgence").value;
+            let role = localStorage.getItem("esp32_role");
 
-            fetch("/save?nom=" + encodeURIComponent(nom) +
-                  "&prenom=" + encodeURIComponent(prenom) +
-                  "&date=" + encodeURIComponent(dateNaissance) +
-                  "&groupe=" + encodeURIComponent(groupeSanguin) +
-                  "&allergies=" + encodeURIComponent(allergies) +
-                  "&maladies=" + encodeURIComponent(maladies) +
-                  "&traitement=" + encodeURIComponent(traitement) +
-                  "&contact=" + encodeURIComponent(contactUrgence))
+            let url = "/save?nom=" + encodeURIComponent(nom) +
+                      "&prenom=" + encodeURIComponent(prenom) +
+                      "&date=" + encodeURIComponent(dateNaissance) +
+                      "&groupe=" + encodeURIComponent(groupeSanguin) +
+                      "&allergies=" + encodeURIComponent(allergies) +
+                      "&maladies=" + encodeURIComponent(maladies) +
+                      "&traitement=" + encodeURIComponent(traitement) +
+                      "&contact=" + encodeURIComponent(contactUrgence) +
+                      "&role=" + encodeURIComponent(role);
+
+            if (role === "admin") {
+                let antecedents = document.getElementById("antecedents_medicaux").value;
+                let chirurgie = document.getElementById("chirurgie").value;
+                let medecinTraitant = document.getElementById("medecin_traitant").value;
+                let numeroSecu = document.getElementById("numero_secu").value;
+
+                url += "&antecedents=" + encodeURIComponent(antecedents) +
+                       "&chirurgie=" + encodeURIComponent(chirurgie) +
+                       "&medecin=" + encodeURIComponent(medecinTraitant) +
+                       "&secu=" + encodeURIComponent(numeroSecu);
+            }
+
+            fetch(url)
             .then(response => response.text())
             .then(data => {
                 document.getElementById("result").innerHTML = data;
@@ -366,17 +420,33 @@ const char control_page[] PROGMEM = R"rawliteral(
 
         function logout() {
             localStorage.removeItem("esp32_auth");
+            localStorage.removeItem("esp32_role");
             window.location.href = "/";
         }
 
-        if (localStorage.getItem("esp32_auth") !== "true") {
-            window.location.href = "/";
+        window.onload = function() {
+            if (localStorage.getItem("esp32_auth") !== "true") {
+                window.location.href = "/";
+                return;
+            }
+
+            let role = localStorage.getItem("esp32_role");
+
+            if (role === "admin") {
+                document.getElementById("adminFields").style.display = "block";
+                document.getElementById("pageTitle").innerText = "Écrire les données médecin";
+            } else {
+                document.getElementById("adminFields").style.display = "none";
+                document.getElementById("pageTitle").innerText = "Écrire les données de base";
+            }
         }
     </script>
 </head>
 <body>
     <div class="container">
-        <h1>Écrire les données</h1>
+        <h1 id="pageTitle">Écrire les données</h1>
+
+        <div class="section-title">Informations de base</div>
 
         <label for="nom">Nom</label>
         <input type="text" id="nom" placeholder="Nom">
@@ -412,6 +482,22 @@ const char control_page[] PROGMEM = R"rawliteral(
         <label for="contact_urgence">Contact d'urgence</label>
         <input type="text" id="contact_urgence" placeholder="Nom du contact">
 
+        <div id="adminFields" style="display:none;">
+            <div class="section-title">Informations réservées au médecin</div>
+
+            <label for="antecedents_medicaux">Antécédents médicaux détaillés</label>
+            <textarea id="antecedents_medicaux" placeholder="Antécédents détaillés"></textarea>
+
+            <label for="chirurgie">Chirurgies / hospitalisations</label>
+            <textarea id="chirurgie" placeholder="Chirurgies, hospitalisations"></textarea>
+
+            <label for="medecin_traitant">Médecin traitant</label>
+            <input type="text" id="medecin_traitant" placeholder="Nom du médecin">
+
+            <label for="numero_secu">Numéro de sécurité sociale</label>
+            <input type="text" id="numero_secu" placeholder="Numéro de sécurité sociale">
+        </div>
+
         <button class="button validate" onclick="afficherDonnees()">Valider</button>
         <button class="button back" onclick="goMenu()">Retour au menu</button>
         <button class="button logout" onclick="logout()">Déconnexion</button>
@@ -433,9 +519,13 @@ void handleLogin() {
         String user = server.arg("user");
         String pass = server.arg("pass");
 
-        if (user == validUser && pass == validPass) {
-            server.send(200, "text/plain", "SUCCESS");
-        } else {
+        if (user == adminUser && pass == adminPass) {
+            server.send(200, "text/plain", "ADMIN");
+        } 
+        else if (user == normalUser && pass == normalPass) {
+            server.send(200, "text/plain", "USER");
+        } 
+        else {
             server.send(401, "text/plain", "ERROR");
         }
     } else {
@@ -464,6 +554,11 @@ void handleRead() {
     traitement = preferences.getString("traitement", "");
     contactUrgence = preferences.getString("contact", "");
 
+    antecedentsMedicaux = preferences.getString("antecedents", "");
+    chirurgie = preferences.getString("chirurgie", "");
+    medecinTraitant = preferences.getString("medecin", "");
+    numeroSecu = preferences.getString("secu", "");
+
     String html = R"rawliteral(
 <!DOCTYPE html>
 <html lang="fr">
@@ -481,7 +576,7 @@ void handleRead() {
 
         .container {
             margin-top: 30px;
-            max-width: 420px;
+            max-width: 460px;
             margin-left: auto;
             margin-right: auto;
             background: white;
@@ -549,6 +644,7 @@ void handleRead() {
 
         function logout() {
             localStorage.removeItem("esp32_auth");
+            localStorage.removeItem("esp32_role");
             window.location.href = "/";
         }
 
@@ -571,6 +667,11 @@ void handleRead() {
     html += "<div class='field'><span class='label'>Traitement en cours</span><div class='value'>" + traitement + "</div></div>";
     html += "<div class='field'><span class='label'>Contact d'urgence</span><div class='value'>" + contactUrgence + "</div></div>";
 
+    html += "<div class='field'><span class='label'>Antécédents médicaux détaillés</span><div class='value'>" + antecedentsMedicaux + "</div></div>";
+    html += "<div class='field'><span class='label'>Chirurgies / hospitalisations</span><div class='value'>" + chirurgie + "</div></div>";
+    html += "<div class='field'><span class='label'>Médecin traitant</span><div class='value'>" + medecinTraitant + "</div></div>";
+    html += "<div class='field'><span class='label'>Numéro sécurité sociale</span><div class='value'>" + numeroSecu + "</div></div>";
+
     html += R"rawliteral(
         <button class="button back" onclick="goMenu()">Retour au menu</button>
         <button class="button logout" onclick="logout()">Déconnexion</button>
@@ -591,7 +692,8 @@ void handleSave() {
         server.hasArg("allergies") &&
         server.hasArg("maladies") &&
         server.hasArg("traitement") &&
-        server.hasArg("contact")) {
+        server.hasArg("contact") &&
+        server.hasArg("role")) {
 
         nom = server.arg("nom");
         prenom = server.arg("prenom");
@@ -611,27 +713,36 @@ void handleSave() {
         preferences.putString("traitement", traitement);
         preferences.putString("contact", contactUrgence);
 
-        String nomLu = preferences.getString("nom", "");
-        String prenomLu = preferences.getString("prenom", "");
-        String dateLu = preferences.getString("date", "");
-        String groupeLu = preferences.getString("groupe", "");
-        String allergiesLu = preferences.getString("allergies", "");
-        String maladiesLu = preferences.getString("maladies", "");
-        String traitementLu = preferences.getString("traitement", "");
-        String contactLu = preferences.getString("contact", "");
+        String role = server.arg("role");
+
+        if (role == "admin") {
+            antecedentsMedicaux = server.arg("antecedents");
+            chirurgie = server.arg("chirurgie");
+            medecinTraitant = server.arg("medecin");
+            numeroSecu = server.arg("secu");
+
+            preferences.putString("antecedents", antecedentsMedicaux);
+            preferences.putString("chirurgie", chirurgie);
+            preferences.putString("medecin", medecinTraitant);
+            preferences.putString("secu", numeroSecu);
+        }
 
         Serial.println("===== DONNEES ENREGISTREES =====");
-        Serial.println("Nom : " + nomLu);
-        Serial.println("Prenom : " + prenomLu);
-        Serial.println("Date de naissance : " + dateLu);
-        Serial.println("Groupe sanguin : " + groupeLu);
-        Serial.println("Allergies : " + allergiesLu);
-        Serial.println("Maladies / antecedents : " + maladiesLu);
-        Serial.println("Traitement : " + traitementLu);
-        Serial.println("Contact urgence : " + contactLu);
+        Serial.println("Nom : " + preferences.getString("nom", ""));
+        Serial.println("Prenom : " + preferences.getString("prenom", ""));
+        Serial.println("Date de naissance : " + preferences.getString("date", ""));
+        Serial.println("Groupe sanguin : " + preferences.getString("groupe", ""));
+        Serial.println("Allergies : " + preferences.getString("allergies", ""));
+        Serial.println("Maladies / antecedents : " + preferences.getString("maladies", ""));
+        Serial.println("Traitement : " + preferences.getString("traitement", ""));
+        Serial.println("Contact urgence : " + preferences.getString("contact", ""));
+        Serial.println("Antécédents détaillés : " + preferences.getString("antecedents", ""));
+        Serial.println("Chirurgies : " + preferences.getString("chirurgie", ""));
+        Serial.println("Médecin traitant : " + preferences.getString("medecin", ""));
+        Serial.println("N° sécurité sociale : " + preferences.getString("secu", ""));
         Serial.println("================================");
 
-        server.send(200, "text/plain", "Données médicales enregistrées avec succès");
+        server.send(200, "text/plain", "Données enregistrées avec succès");
     } else {
         server.send(400, "text/plain", "Paramètres manquants");
     }
@@ -652,6 +763,11 @@ void setup() {
     maladies = preferences.getString("maladies", "");
     traitement = preferences.getString("traitement", "");
     contactUrgence = preferences.getString("contact", "");
+
+    antecedentsMedicaux = preferences.getString("antecedents", "");
+    chirurgie = preferences.getString("chirurgie", "");
+    medecinTraitant = preferences.getString("medecin", "");
+    numeroSecu = preferences.getString("secu", "");
 
     WiFi.softAP(ssid, password);
     dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
@@ -678,6 +794,10 @@ void setup() {
     Serial.println("Maladies / antecedents : " + maladies);
     Serial.println("Traitement : " + traitement);
     Serial.println("Contact urgence : " + contactUrgence);
+    Serial.println("Antécédents détaillés : " + antecedentsMedicaux);
+    Serial.println("Chirurgies : " + chirurgie);
+    Serial.println("Médecin traitant : " + medecinTraitant);
+    Serial.println("N° sécurité sociale : " + numeroSecu);
     Serial.println("====================================");
 }
 
