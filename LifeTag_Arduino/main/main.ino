@@ -111,6 +111,11 @@ const char login_page[] PROGMEM = R"rawliteral(
             color: #666;
             font-size: 13px;
         }
+        footer{
+            margin-top:40px;
+            font-size:12px;
+            color:#aaa;
+        }
     </style>
 
     <script>
@@ -149,6 +154,9 @@ const char login_page[] PROGMEM = R"rawliteral(
         <button class="button" onclick="login()">Se connecter</button>
     </div>
 </body>
+<footer>
+    © 2026 Safyra Systems
+</footer>
 </html>
 )rawliteral";
 
