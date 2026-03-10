@@ -12,6 +12,13 @@
 #include <Adafruit_GFX.h>
 #include <Preferences.h>
 #include <ESPmDNS.h>
+#include <Wire.h>
+
+#define NFC_SDA 8
+#define NFC_SCL 9
+#define NFC_FD 10
+
+#define NT3H_I2C_ADDR 0x55
 
 // Identifiants
 const char* adminUser = "admin";
@@ -873,6 +880,60 @@ void handleReadMedecin() {
     server.send(200, "text/html", html);
 }
 
+void handleRedirect() {
+    server.sendHeader("Location", String("http://") + WiFi.softAPIP().toString() + "/", true);
+    server.send(302, "text/plain", "");
+}
+
+bool isNfcReaderPresent() {
+    return digitalRead(NFC_FD) == HIGH;
+}
+
+void writeNfcPage(uint8_t page, uint8_t *data) 
+{
+    Wire.beginTransmission(NT3H_I2C_ADDR);
+    Wire.write(page); // adresse mémoire
+    for(int i=0;i<16;i++) 
+    {
+        Wire.write(data[i]);
+    }
+    Wire.endTransmission();
+}
+
+void writeNfcText(String text) 
+{
+    uint8_t buffer[16];
+    int page = 4; // début mémoire utilisateur
+    int len = text.length();
+    int index = 0;
+
+    while(index < len) 
+    {
+        for(int i=0;i<16;i++) 
+        {
+            if(index < len)
+                buffer[i] = text[index++];
+            else
+                buffer[i] = 0x00;
+        }
+        writeNfcPage(page, buffer);
+        page++;
+    }
+}
+
+void writeEmergencyToNFC() 
+{
+    String data = "";
+
+    data += "Nom:" + nom + "\n";
+    data += "Prenom:" + prenom + "\n";
+    data += "Groupe:" + groupeSanguin + "\n";
+    data += "Allergies:" + allergies + "\n";
+    data += "Contact:" + contactUrgence + "\n";
+
+    writeNfcText(data);
+}
+
 // ---------- SAUVEGARDE ----------
 void handleSave() {
     if (server.hasArg("nom") &&
@@ -940,15 +1001,11 @@ void handleSave() {
             preferences.putString("pathologies", pathologiesChroniques);
             preferences.putString("dossier", numeroDossierMedical);
         }
+        writeEmergencyToNFC();
         server.send(200, "text/plain", "Données enregistrées avec succès");
     } else {
         server.send(400, "text/plain", "Paramètres manquants");
     }
-}
-
-void handleRedirect() {
-    server.sendHeader("Location", String("http://") + WiFi.softAPIP().toString() + "/", true);
-    server.send(302, "text/plain", "");
 }
 
 // ---------- SETUP ----------
@@ -981,6 +1038,10 @@ void setup() {
     pathologiesChroniques = preferences.getString("pathologies", "");
     numeroDossierMedical = preferences.getString("dossier", "");
 
+    Wire.begin(NFC_SDA, NFC_SCL);
+
+    pinMode(NFC_FD, INPUT);
+
     WiFi.softAP(ssid, password);
     dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
     MDNS.begin("safyra");
@@ -1007,4 +1068,8 @@ void setup() {
 void loop() {
     dnsServer.processNextRequest();
     server.handleClient();
+    if(isNfcReaderPresent()) 
+    {
+        Serial.println("Lecteur NFC detecte");
+    }
 }
