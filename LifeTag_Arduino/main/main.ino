@@ -111,6 +111,13 @@ const char login_page[] PROGMEM = R"rawliteral(
             color: #666;
             font-size: 13px;
         }
+        .access-type{
+            margin-top:20px;
+            padding-top:15px;
+            border-top:1px solid #ddd;
+            font-size:14px;
+            color:#666;
+        }
         footer{
             margin-top:40px;
             font-size:12px;
@@ -152,6 +159,9 @@ const char login_page[] PROGMEM = R"rawliteral(
         <input type="password" id="password" placeholder="Mot de passe">
         <p class="error" id="error-message">Login ou mot de passe incorrect</p>
         <button class="button" onclick="login()">Se connecter</button>
+    </div>
+    <div class="access-type">
+        Accès: 👤 Utilisateur | 👨‍⚕️ Personnel médical
     </div>
 </body>
 <footer>
