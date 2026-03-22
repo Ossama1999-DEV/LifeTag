@@ -1,9 +1,6 @@
 #pragma once
-
 #include <Arduino.h>
-#include <stdint.h>
 
-bool isNfcReaderPresent();
-void writeNfcPage(uint8_t page, uint8_t *data);
-void writeNfcText(String text);
-void writeEmergencyToNFC();
+bool nfcReadBlock(uint8_t block, uint8_t *buf);
+bool nfcWriteBlock(uint8_t block, const uint8_t *data);
+bool writeEmergencyToNFC();

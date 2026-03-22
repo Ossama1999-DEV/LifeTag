@@ -5,6 +5,9 @@
 #include <DNSServer.h>
 #include <Preferences.h>
 
+extern bool nfcWritePending;
+extern unsigned long nfcWriteRequestTime;
+
 extern WebServer server;
 extern DNSServer dnsServer;
 extern Preferences preferences;

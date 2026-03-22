@@ -1,6 +1,9 @@
 #include "app_data.h"
 #include "config.h"
 
+bool nfcWritePending = false;
+unsigned long nfcWriteRequestTime = 0;
+
 WebServer server(80);
 DNSServer dnsServer;
 Preferences preferences;

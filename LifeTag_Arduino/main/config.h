@@ -6,7 +6,8 @@
 #define NFC_SCL 9
 #define NFC_FD 10
 
-#define NT3H_I2C_ADDR 0x55
+//#define NT3H_I2C_ADDR 0x55
+#define NT3H_I2C_ADDR 0x02
 
 extern const char* adminUser;
 extern const char* adminPass;

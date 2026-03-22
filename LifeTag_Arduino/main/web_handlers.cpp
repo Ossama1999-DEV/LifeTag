@@ -6,6 +6,7 @@
 #include "storage.h"
 #include "nfc.h"
 #include <WiFi.h>
+#include "app_data.h"
 
 // ---------- PAGE PRINCIPALE ----------
 void handleRoot() {
@@ -651,8 +652,10 @@ void handleSave() {
             preferences.putString("pathologies", pathologiesChroniques);
             preferences.putString("dossier", numeroDossierMedical);
         }
-        writeEmergencyToNFC();
-        server.send(200, "text/plain", "Données enregistrées avec succès");
+                nfcWritePending = true;
+        nfcWriteRequestTime = millis();
+
+        server.send(200, "text/plain", "Données enregistrées sur l'ESP. Écriture NFC en cours...");
     } else {
         server.send(400, "text/plain", "Paramètres manquants");
     }
