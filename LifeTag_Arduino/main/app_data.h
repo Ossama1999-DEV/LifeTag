@@ -35,4 +35,6 @@ extern String medecinTraitant;
 extern String numeroSecu;
 extern String contreIndications;
 extern String pathologiesChroniques;
-extern String numeroDossierMedical;
+
+extern String adresse;
+extern String dispositifMedical;

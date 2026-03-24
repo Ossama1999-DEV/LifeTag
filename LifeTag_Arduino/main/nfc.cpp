@@ -73,14 +73,15 @@ bool nfcWriteBlock(uint8_t block, const uint8_t *data) {
 static bool writeNdefText(const String& text) {
     const uint8_t langLen = 2; // "fr"
 
-    if (text.length() > 80) {
+    if (text.length() > 250) {
         Serial.println("NFC: texte trop long");
         return false;
     }
 
     uint8_t payloadLen = 1 + langLen + text.length();
 
-    uint8_t buffer[64] = {0};
+    //uint8_t buffer[64] = {0};
+    uint8_t buffer[256] = {0};
     int p = 0;
 
     // TLV NDEF
@@ -137,6 +138,7 @@ static bool writeNdefText(const String& text) {
     return true;
 }
 
+/*
 bool writeEmergencyToNFC() {
     Serial.println("NFC: debut writeEmergencyToNFC");
 
@@ -157,6 +159,60 @@ bool writeEmergencyToNFC() {
     if (contactUrgence.length() > 0) {
         text += "\nUrgence: " + contactUrgence;
     }
+
+    Serial.println("NFC: texte a ecrire =");
+    Serial.println(text);
+    Serial.print("NFC: longueur texte = ");
+    Serial.println(text.length());
+
+    bool ok = writeNdefText(text);
+
+    Serial.print("NFC: resultat final = ");
+    Serial.println(ok ? "OK" : "ECHEC");
+
+    return ok;
+}*/
+
+String clean (String input) {
+    input.replace(";", ",");   // évite de casser le format
+    input.replace("\n", " ");  // évite les retours à la ligne
+    input.trim();              // nettoie les espaces inutiles
+    return input;
+}
+
+bool writeEmergencyToNFC() {
+    Serial.println("NFC: debut writeEmergencyToNFC");
+/*
+    String text =
+        "\"" + nom + "\";" +
+        "\"" + prenom + "\";" +
+        "\"" + dateNaissance + "\";" +
+        "\"" + sexe + "\";" +
+        "\"" + adresse + "\";" +
+        "\"" + contactUrgence + "\";" +
+        "\"" + taille + "\";" +
+        "\"" + poids + "\";" +
+        "\"" + groupeSanguin + "\";" +
+        "\"" + allergies + "\";" +
+        "\"" + maladies + "\";" +
+        "\"" + traitement + "\";" +
+        "\"" + implant + "\"";
+        */
+
+    String text =
+        clean(nom) + ";" +
+        clean(prenom) + ";" +
+        clean(dateNaissance) + ";" +
+        clean(sexe) +  ";" +
+        clean(adresse) + ";" +
+        clean(contactUrgence) + ";" +
+        clean(taille) + ";" +
+        clean(poids) + ";" +
+        clean(groupeSanguin) + ";" +
+        clean(allergies) + ";" +
+        clean(maladies) + ";" +
+        clean(traitement) + ";" +
+        clean(dispositifMedical) ;
 
     Serial.println("NFC: texte a ecrire =");
     Serial.println(text);

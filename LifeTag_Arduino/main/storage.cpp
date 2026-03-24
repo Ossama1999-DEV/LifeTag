@@ -23,7 +23,8 @@ void loadAllData() {
     numeroSecu = preferences.getString("secu", "");
     contreIndications = preferences.getString("contre", "");
     pathologiesChroniques = preferences.getString("pathologies", "");
-    numeroDossierMedical = preferences.getString("dossier", "");
+    adresse = preferences.getString("adresse", "");
+    dispositifMedical = preferences.getString("dispositif medical", "");
 }
 
 void saveBaseData() {
@@ -41,6 +42,8 @@ void saveBaseData() {
     preferences.putString("personne", personneAPrevenir);
     preferences.putString("lien", lienParente);
     preferences.putString("vitaux", traitementsVitaux);
+    preferences.putString("adresse", adresse);
+    preferences.putString("dispositif medical", dispositifMedical);
 }
 
 void saveAdminData() {
@@ -50,5 +53,4 @@ void saveAdminData() {
     preferences.putString("secu", numeroSecu);
     preferences.putString("contre", contreIndications);
     preferences.putString("pathologies", pathologiesChroniques);
-    preferences.putString("dossier", numeroDossierMedical);
 }

@@ -59,7 +59,6 @@ void handleControl() {
     numeroSecu = preferences.getString("secu", "");
     contreIndications = preferences.getString("contre", "");
     pathologiesChroniques = preferences.getString("pathologies", "");
-    numeroDossierMedical = preferences.getString("dossier", "");
 
     String html = R"rawliteral(
 <!DOCTYPE html>
@@ -156,6 +155,8 @@ void handleControl() {
             let personnePrevenir = document.getElementById("personne_prevenir").value;
             let lienParente = document.getElementById("lien_parente").value;
             let traitementsVitaux = document.getElementById("traitements_vitaux").value;
+            let adresse = document.getElementById("adresse").value;
+            let dispositifMedical = document.getElementById("dispositif _medical").value;
 
             let url = "/save?nom=" + encodeURIComponent(nom) +
                       "&prenom=" + encodeURIComponent(prenom) +
@@ -163,6 +164,8 @@ void handleControl() {
                       "&sexe=" + encodeURIComponent(sexe) +
                       "&taille=" + encodeURIComponent(taille) +
                       "&poids=" + encodeURIComponent(poids) +
+                      "&adresse=" + encodeURIComponent(adresse) +
+                      "&dispositifMedical=" + encodeURIComponent(dispositifMedical) +
                       "&groupe=" + encodeURIComponent(groupeSanguin) +
                       "&allergies=" + encodeURIComponent(allergies) +
                       "&maladies=" + encodeURIComponent(maladies) +
@@ -180,7 +183,6 @@ void handleControl() {
                 let numeroSecu = document.getElementById("numero_secu").value;
                 let contreIndications = document.getElementById("contre_indications").value;
                 let pathologiesChroniques = document.getElementById("pathologies_chroniques").value;
-                let numeroDossier = document.getElementById("numero_dossier").value;
 
                 url += "&antecedents=" + encodeURIComponent(antecedents) +
                        "&chirurgie=" + encodeURIComponent(chirurgie) +
@@ -188,7 +190,6 @@ void handleControl() {
                        "&secu=" + encodeURIComponent(numeroSecu) +
                        "&contre=" + encodeURIComponent(contreIndications) +
                        "&pathologies=" + encodeURIComponent(pathologiesChroniques) +
-                       "&dossier=" + encodeURIComponent(numeroDossier);
             }
 
             fetch(url)
@@ -244,8 +245,10 @@ void handleControl() {
     html += "<option value='Autre'" + optionSelected(sexe, "Autre") + ">Autre</option>";
     html += "</select>";
 
-    html += inputText("taille", "Taille", taille, "Ex : 1.78 m");
+    html += inputText("taille", "Taille", taille, "Ex : 178 cm");
     html += inputText("poids", "Poids", poids, "Ex : 74 kg");
+    html += inputText("adresse", "Adresse", adresse, "Adresse complète");
+    html += inputText("dispositifMedical", "Dispositif medical", dispositifMedical, "Ex : pacemaker, prothèse, aucun");
 
     html += "<label for='groupe_sanguin'>Groupe sanguin</label>";
     html += "<select id='groupe_sanguin'>";
@@ -276,7 +279,6 @@ void handleControl() {
     html += inputText("numero_secu", "Numéro de sécurité sociale", numeroSecu, "Numéro de sécurité sociale");
     html += textArea("contre_indications", "Contre-indications", contreIndications, "Contre-indications");
     html += textArea("pathologies_chroniques", "Pathologies chroniques", pathologiesChroniques, "Pathologies chroniques");
-    html += inputText("numero_dossier", "Numéro de dossier médical", numeroDossierMedical, "Numéro dossier");
     html += "</div>";
 
     html += R"rawliteral(
@@ -455,7 +457,6 @@ void handleReadMedecin() {
     numeroSecu = preferences.getString("secu", "");
     contreIndications = preferences.getString("contre", "");
     pathologiesChroniques = preferences.getString("pathologies", "");
-    numeroDossierMedical = preferences.getString("dossier", "");
 
     String html = R"rawliteral(
 <!DOCTYPE html>
@@ -566,7 +567,6 @@ void handleReadMedecin() {
     html += "<div class='field'><span class='label'>Numéro sécurité sociale</span><div class='value'>" + htmlEscape(numeroSecu) + "</div></div>";
     html += "<div class='field'><span class='label'>Contre-indications</span><div class='value'>" + htmlEscape(contreIndications) + "</div></div>";
     html += "<div class='field'><span class='label'>Pathologies chroniques</span><div class='value'>" + htmlEscape(pathologiesChroniques) + "</div></div>";
-    html += "<div class='field'><span class='label'>Numéro de dossier médical</span><div class='value'>" + htmlEscape(numeroDossierMedical) + "</div></div>";
 
     html += R"rawliteral(
         <button class="button edit" onclick="goEdit()">Modifier</button>
@@ -593,6 +593,8 @@ void handleSave() {
         server.hasArg("sexe") &&
         server.hasArg("taille") &&
         server.hasArg("poids") &&
+        server.hasArg("adresse") &&
+        server.hasArg("dispositifMedical") &&
         server.hasArg("groupe") &&
         server.hasArg("allergies") &&
         server.hasArg("maladies") &&
@@ -609,6 +611,8 @@ void handleSave() {
         sexe = server.arg("sexe");
         taille = server.arg("taille");
         poids = server.arg("poids");
+        adresse = server.arg("adresse");
+        dispositifMedical = server.arg("dispositif medical");
         groupeSanguin = server.arg("groupe");
         allergies = server.arg("allergies");
         maladies = server.arg("maladies");
@@ -644,7 +648,6 @@ void handleSave() {
             numeroSecu = server.arg("secu");
             contreIndications = server.arg("contre");
             pathologiesChroniques = server.arg("pathologies");
-            numeroDossierMedical = server.arg("dossier");
 
             preferences.putString("antecedents", antecedentsMedicaux);
             preferences.putString("chirurgie", chirurgie);
@@ -652,7 +655,6 @@ void handleSave() {
             preferences.putString("secu", numeroSecu);
             preferences.putString("contre", contreIndications);
             preferences.putString("pathologies", pathologiesChroniques);
-            preferences.putString("dossier", numeroDossierMedical);
         }
 
                 nfcWritePending = true;
@@ -670,7 +672,6 @@ void handleSave() {
             numeroSecu = server.arg("secu");
             contreIndications = server.arg("contre");
             pathologiesChroniques = server.arg("pathologies");
-            numeroDossierMedical = server.arg("dossier");
 
             saveAdminData();
         }

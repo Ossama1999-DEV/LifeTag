@@ -33,6 +33,9 @@ String contreIndications = "";
 String pathologiesChroniques = "";
 String numeroDossierMedical = "";
 
+String adresse = "";
+String dispositifMedical = "";
+
 const char* adminUser = "admin";
 const char* adminPass = "1234";
 
