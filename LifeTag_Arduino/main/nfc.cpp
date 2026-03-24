@@ -140,7 +140,23 @@ static bool writeNdefText(const String& text) {
 bool writeEmergencyToNFC() {
     Serial.println("NFC: debut writeEmergencyToNFC");
 
-    String text = "Giraud";
+    String text = prenom + " " + nom;
+
+    if (groupeSanguin.length() > 0) {
+        text += "\nGS: " + groupeSanguin;
+    }
+
+    if (allergies.length() > 0) {
+        text += "\nAllergies: " + allergies;
+    }
+
+    if (traitementsVitaux.length() > 0) {
+        text += "\nVitaux: " + traitementsVitaux;
+    }
+
+    if (contactUrgence.length() > 0) {
+        text += "\nUrgence: " + contactUrgence;
+    }
 
     Serial.println("NFC: texte a ecrire =");
     Serial.println(text);

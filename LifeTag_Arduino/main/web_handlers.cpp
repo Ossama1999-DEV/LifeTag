@@ -618,6 +618,7 @@ void handleSave() {
         lienParente = server.arg("lien");
         traitementsVitaux = server.arg("vitaux");
 
+        /*/
         preferences.putString("nom", nom);
         preferences.putString("prenom", prenom);
         preferences.putString("date", dateNaissance);
@@ -632,6 +633,7 @@ void handleSave() {
         preferences.putString("personne", personneAPrevenir);
         preferences.putString("lien", lienParente);
         preferences.putString("vitaux", traitementsVitaux);
+        
 
         String role = server.arg("role");
 
@@ -652,7 +654,28 @@ void handleSave() {
             preferences.putString("pathologies", pathologiesChroniques);
             preferences.putString("dossier", numeroDossierMedical);
         }
+
                 nfcWritePending = true;
+        nfcWriteRequestTime = millis();
+
+        server.send(200, "text/plain", "Données enregistrées sur l'ESP. Écriture NFC en cours...");*/
+                saveBaseData();
+
+        String role = server.arg("role");
+
+        if (role == "admin") {
+            antecedentsMedicaux = server.arg("antecedents");
+            chirurgie = server.arg("chirurgie");
+            medecinTraitant = server.arg("medecin");
+            numeroSecu = server.arg("secu");
+            contreIndications = server.arg("contre");
+            pathologiesChroniques = server.arg("pathologies");
+            numeroDossierMedical = server.arg("dossier");
+
+            saveAdminData();
+        }
+
+        nfcWritePending = true;
         nfcWriteRequestTime = millis();
 
         server.send(200, "text/plain", "Données enregistrées sur l'ESP. Écriture NFC en cours...");
