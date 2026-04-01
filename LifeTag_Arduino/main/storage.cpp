@@ -43,7 +43,7 @@ void saveBaseData() {
     preferences.putString("lien", lienParente);
     preferences.putString("vitaux", traitementsVitaux);
     preferences.putString("adresse", adresse);
-    preferences.putString("dispositif medical", dispositifMedical);
+    preferences.putString("dispositifMedical", dispositifMedical);
 }
 
 void saveAdminData() {

@@ -31,7 +31,6 @@ String medecinTraitant = "";
 String numeroSecu = "";
 String contreIndications = "";
 String pathologiesChroniques = "";
-String numeroDossierMedical = "";
 
 String adresse = "";
 String dispositifMedical = "";

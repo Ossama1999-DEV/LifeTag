@@ -182,22 +182,6 @@ String clean (String input) {
 
 bool writeEmergencyToNFC() {
     Serial.println("NFC: debut writeEmergencyToNFC");
-/*
-    String text =
-        "\"" + nom + "\";" +
-        "\"" + prenom + "\";" +
-        "\"" + dateNaissance + "\";" +
-        "\"" + sexe + "\";" +
-        "\"" + adresse + "\";" +
-        "\"" + contactUrgence + "\";" +
-        "\"" + taille + "\";" +
-        "\"" + poids + "\";" +
-        "\"" + groupeSanguin + "\";" +
-        "\"" + allergies + "\";" +
-        "\"" + maladies + "\";" +
-        "\"" + traitement + "\";" +
-        "\"" + implant + "\"";
-        */
 
     String text =
         clean(nom) + ";" +

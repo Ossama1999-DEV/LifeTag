@@ -28,13 +28,11 @@ extern String contactUrgence;
 extern String personneAPrevenir;
 extern String lienParente;
 extern String traitementsVitaux;
-
 extern String antecedentsMedicaux;
 extern String chirurgie;
 extern String medecinTraitant;
 extern String numeroSecu;
 extern String contreIndications;
 extern String pathologiesChroniques;
-
 extern String adresse;
 extern String dispositifMedical;

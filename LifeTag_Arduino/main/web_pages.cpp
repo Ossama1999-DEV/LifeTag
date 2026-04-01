@@ -105,9 +105,6 @@ const char login_page[] PROGMEM = R"rawliteral(
         <p class="error" id="error-message">Login ou mot de passe incorrect</p>
         <button class="button" onclick="login()">Se connecter</button>
     </div>
-    <div class="access-type">
-        Accès: 👤 Utilisateur | 👨‍⚕️ Personnel médical
-    </div>
 </body>
 <footer>
     © 2026 Safyra Systems

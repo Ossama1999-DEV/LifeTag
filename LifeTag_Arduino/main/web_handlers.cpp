@@ -156,7 +156,7 @@ void handleControl() {
             let lienParente = document.getElementById("lien_parente").value;
             let traitementsVitaux = document.getElementById("traitements_vitaux").value;
             let adresse = document.getElementById("adresse").value;
-            let dispositifMedical = document.getElementById("dispositif _medical").value;
+            let dispositifMedical = document.getElementById("dispositifMedical").value;
 
             let url = "/save?nom=" + encodeURIComponent(nom) +
                       "&prenom=" + encodeURIComponent(prenom) +
@@ -189,7 +189,7 @@ void handleControl() {
                        "&medecin=" + encodeURIComponent(medecinTraitant) +
                        "&secu=" + encodeURIComponent(numeroSecu) +
                        "&contre=" + encodeURIComponent(contreIndications) +
-                       "&pathologies=" + encodeURIComponent(pathologiesChroniques) +
+                       "&pathologies=" + encodeURIComponent(pathologiesChroniques)
             }
 
             fetch(url)
@@ -612,7 +612,7 @@ void handleSave() {
         taille = server.arg("taille");
         poids = server.arg("poids");
         adresse = server.arg("adresse");
-        dispositifMedical = server.arg("dispositif medical");
+        dispositifMedical = server.arg("dispositifMedical");
         groupeSanguin = server.arg("groupe");
         allergies = server.arg("allergies");
         maladies = server.arg("maladies");
@@ -622,46 +622,7 @@ void handleSave() {
         lienParente = server.arg("lien");
         traitementsVitaux = server.arg("vitaux");
 
-        /*/
-        preferences.putString("nom", nom);
-        preferences.putString("prenom", prenom);
-        preferences.putString("date", dateNaissance);
-        preferences.putString("sexe", sexe);
-        preferences.putString("taille", taille);
-        preferences.putString("poids", poids);
-        preferences.putString("groupe", groupeSanguin);
-        preferences.putString("allergies", allergies);
-        preferences.putString("maladies", maladies);
-        preferences.putString("traitement", traitement);
-        preferences.putString("contact", contactUrgence);
-        preferences.putString("personne", personneAPrevenir);
-        preferences.putString("lien", lienParente);
-        preferences.putString("vitaux", traitementsVitaux);
-        
-
-        String role = server.arg("role");
-
-        if (role == "admin") {
-            antecedentsMedicaux = server.arg("antecedents");
-            chirurgie = server.arg("chirurgie");
-            medecinTraitant = server.arg("medecin");
-            numeroSecu = server.arg("secu");
-            contreIndications = server.arg("contre");
-            pathologiesChroniques = server.arg("pathologies");
-
-            preferences.putString("antecedents", antecedentsMedicaux);
-            preferences.putString("chirurgie", chirurgie);
-            preferences.putString("medecin", medecinTraitant);
-            preferences.putString("secu", numeroSecu);
-            preferences.putString("contre", contreIndications);
-            preferences.putString("pathologies", pathologiesChroniques);
-        }
-
-                nfcWritePending = true;
-        nfcWriteRequestTime = millis();
-
-        server.send(200, "text/plain", "Données enregistrées sur l'ESP. Écriture NFC en cours...");*/
-                saveBaseData();
+        saveBaseData();
 
         String role = server.arg("role");
 
